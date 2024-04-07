@@ -1,5 +1,5 @@
 # Use an official Node runtime as the base image
-FROM node:18-alpine as builder
+FROM node:14-alpine as builder
 
 # Set the working directory in the container
 WORKDIR /app
@@ -7,13 +7,10 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
-
-# Copy the remaining application code to the working directory
-COPY . .
+RUN npm install --production
 
 # Build the application
-RUN yarn build
+RUN npm run deploy
 
 # Use Nginx as the web server to serve the application
 FROM nginx:alpine

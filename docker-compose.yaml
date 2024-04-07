@@ -4,8 +4,6 @@ services:
   tenant-admin-app:
     container_name: tenant-admin-app
     build:
-      platforms: 
-        - linux/arm64/v8
       context: .
       dockerfile: Dockerfile
     ports:
