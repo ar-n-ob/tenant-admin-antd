@@ -1,25 +1,31 @@
-# Use an official Node runtime as the base image
-FROM node:14-alpine as builder
+# Use a Node.js base image
+FROM node:16-alpine as builder
 
 # Set the working directory in the container
 WORKDIR /app
 
 COPY . .
 
-# Install dependencies
-RUN npm install --production
+RUN npm install -g pnpm
 
-# Build the application
-RUN npm run deploy
+# Copy package.json and package-lock.json to the container
+COPY package*.json ./
 
-# Use Nginx as the web server to serve the application
+
+# Install project dependencies
+RUN pnpm install
+
+# Build the production version of the project
+RUN pnpm build
+
+# Stage 2: Serve the built application using Nginx
 FROM nginx:alpine
 
-# Copy the built application from the builder stage to the Nginx web server directory
+# Copy the built application from the builder stage to the nginx directory
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port 80 to the outside world
+# Expose port 80
 EXPOSE 80
 
-# Start Nginx when the container starts
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
